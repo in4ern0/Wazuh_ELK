@@ -1,0 +1,197 @@
+CONFIG
+## Multi-node configuration
+
+## Elasticsearch configuration
+
+cluster.name: elastic_cluster
+
+cluster.initial_master_nodes:
+        - elkmaster01
+        - elkdata01
+        - elkdata02
+
+discovery.seed_hosts:
+        - 10.10.10.10
+        - 10.10.10.10
+        - 10.10.10.10
+
+## Certificates creation
+
+# Clients certificates
+clients:
+  - name: admin
+    dn: CN=admin,OU=Docu,O=Wazuh,L=California,C=US
+    admin: true
+  - name: filebeat
+    dn: CN=filebeat,OU=Docu,O=Wazuh,L=California,C=US
+
+
+# Kibana-instance
+- kibana_ip
+
+# Wazuh-master-configuration
+- wazuh_master_ip
+
+
+
+Instance
+# Elasticsearch nodes
+elasticsearch-nodes:
+  - name: elkmaster01
+    ip:
+      - 10.10.10.10
+  - name: elkdata01
+    ip:
+      - 10.10.10.10
+  - name: elkdata02
+    ip:
+      - 10.10.10.10
+
+# Wazuh server nodes
+wazuh-servers:
+  - name: wazuhmaster01
+    ip:
+      - 10.10.10.10
+  - name: wazuhworker01
+    ip:
+      - 10.10.10.10
+  - name: wazuhworker02
+    ip:
+      - 10.10.10.10
+
+
+# Kibana node
+kibana:
+  - name: kibana
+    ip:
+      - Kibana_IP
+
+
+
+
+
+
+# Wazuh - Filebeat configuration file
+output.elasticsearch:
+  hosts: ["elk_ip:9200", "elk_ip:9200", "elk_ip:9200"]
+  protocol: https
+  username: "admin"
+  password: "admin"
+  ssl.certificate_authorities:
+    - /etc/filebeat/certs/root-ca.pem
+  ssl.certificate: "/etc/filebeat/certs/filebeat.pem"
+  ssl.key: "/etc/filebeat/certs/filebeat-key.pem"
+setup.template.json.enabled: true
+setup.template.json.path: '/etc/filebeat/wazuh-template.json'
+setup.template.json.name: 'wazuh'
+setup.ilm.overwrite: true
+setup.ilm.enabled: false
+
+filebeat.modules:
+  - module: wazuh
+    alerts:
+      enabled: true
+    archives:
+      enabled: false
+
+
+
+
+
+
+  <cluster>
+    <name>wazuh</name>
+    <node_name>wahuzworker01</node_name>
+    <node_type>worker</node_type>
+    <key>39953e8a3e5d4466300771a30a23eeb9</key>
+    <port>1516</port>
+    <bind_addr>0.0.0.0</bind_addr>
+    <nodes>
+        <node>MasterWazuhIP_NOTWORKER</node>
+    </nodes>
+    <hidden>no</hidden>
+    <disabled>no</disabled>
+  </cluster>
+
+
+
+
+  <cluster>
+    <name>wazuh</name>
+    <node_name>wazuhmaster01</node_name>
+    <node_type>master</node_type>
+    <key>39953e8a3e5d4466300771a30a23eeb9</key>
+    <port>1516</port>
+    <bind_addr>0.0.0.0</bind_addr>
+    <nodes>
+        <node>MasterWazuhIP</node>
+    </nodes>
+    <hidden>no</hidden>
+    <disabled>no</disabled>
+  </cluster>
+  
+  
+  
+  hosts:
+  - wazuhmaster01:
+     url: https://IP
+     port: 55000
+     username: wazuh-wui
+     password: wazuh-wui
+     run_as: false
+
+  - wazuhworker01:
+     url: https://IP
+     port: 55000
+     username: wazuh-wui
+     password: wazuh-wui
+     run_as: false
+
+  - wazuhworker02:
+     url: https://IP
+     port: 55000
+     username: wazuh-wui
+     password: wazuh-wui
+     run_as: false
+
+
+  
+  
+  Created elasticsearch keystore in /etc/elasticsearch/elasticsearch.keystore
+Setting up opendistro-job-scheduler (1.13.0.0-1) ...
+Setting up opendistro-reports-scheduler (1.13.0.0-1) ...
+Setting up opendistro-sql (1.13.2.0-1) ...
+Setting up opendistro-security (1.13.1.0-1) ...
+OpenDistro for Elasticsearch Security Demo Installer
+ ** Warning: Do not use on production or public reachable systems **
+Basedir: /usr/share/elasticsearch
+This script maybe require your root password for 'sudo' privileges
+Elasticsearch install type: rpm/deb on DISTRIB_ID=Ubuntu
+Elasticsearch config dir: /etc/elasticsearch
+Elasticsearch config file: /etc/elasticsearch/elasticsearch.yml
+Elasticsearch bin dir: /usr/share/elasticsearch/bin
+Elasticsearch plugins dir: /usr/share/elasticsearch/plugins
+Elasticsearch lib dir: /usr/share/elasticsearch/lib
+Detected Elasticsearch Version: x-content-7.10.2
+Detected Open Distro Security Version: 1.13.1.0
+
+### Success
+### Execute this script now on all your nodes and then start all nodes
+### Open Distro Security will be automatically initialized.
+### If you like to change the runtime configuration
+### change the files in ../securityconfig and execute:
+sudo "/usr/share/elasticsearch/plugins/opendistro_security/tools/securityadmin.sh" -cd "/usr/share/elasticsearch/plugins/opendistro_security/securityconfig" -icl -key "/etc/elasticsearch/kirk-key.pem" -cert "/etc/elasticsearch/kirk.pem" -cacert "/etc/elasticsearch/root-ca.pem" -nhnv
+### or run ./securityadmin_demo.sh
+### To use the Security Plugin ConfigurationGUI
+### To access your secured cluster open https://<hostname>:<HTTP port> and log in with admin/admin.
+### (Ignore the SSL certificate warning because we installed self-signed demo certificates)
+Setting up opendistro-knn (1.13.0.0-1) ...
+Setting up opendistro-asynchronous-search (1.13.0.1-1) ...
+Setting up opendistro-alerting (1.13.1.0-1) ...
+Setting up opendistro-anomaly-detection (1.13.0.0-1) ...
+Setting up opendistro-index-management (1.13.2.0-1) ...
+Setting up opendistro-performance-analyzer (1.13.0.0-1) ...
+# Enabling opendistro performance analyzer to start and stop along with elasticsearch.service
+Created symlink /etc/systemd/system/elasticsearch.service.wants/opendistro-performance-analyzer.service → /lib/systemd/system/opendistro-performance-analyzer.service.
+Setting up opendistroforelasticsearch (1.13.2-1) ...
+Processing triggers for systemd (245.4-4ubuntu3.15) ...
